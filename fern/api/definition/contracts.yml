@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+services:
+  http:
+    ContractsService:
+      docs: The endpoints in the /data/contracts path provide pricing and trading information about collections of NFTs that are managed by the same smart contract.
+      auth: true 
+      base-path: /data/contracts
+      endpoints: 
+        get:
+          docs: Returns information about the specified contract by its ID. Include the include=insights,insights_history parameter for historical pricing and trading information based on block-by-block traversal of the network.
+          method: GET 
+          path: /{id}
+          path-parameters:
+            id: 
+              type: string 
+              docs: The ID of the contract, in the format "network:contract"
+          query-parameters:
+            include:
+              type: optional<Include>
+              docs: The resources to include in the response; insights provides aggregated pricing and trading information for the previous 90 days and "insights_history" provides pricing and trading information for each day in the last 90 days, token_attributes returns list of attributes that are available for tokens within a contract
+          response: Contract
+
+types: 
+  Include: 
+    enum: 
+      - metadata
+      - insights
+      - insights_history
+      - token_attributes
+
+  Contract: 
+    properties:
+      data: ContractData
+
+  # please define this object
+  ContractData:
+    properties:
+      property1: string #example, you'll delete this line and add the properties based on the API reference docs
