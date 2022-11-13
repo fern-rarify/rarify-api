@@ -7,7 +7,7 @@ services:
       auth: true 
       base-path: /data/contracts
       endpoints: 
-        get:
+        getContract:
           docs: Returns information about the specified contract by its ID. Include the include=insights,insights_history parameter for historical pricing and trading information based on block-by-block traversal of the network.
           method: GET 
           path: /{id}
@@ -31,9 +31,247 @@ types:
 
   Contract: 
     properties:
-      data: ContractData
-
-  # please define this object
-  ContractData:
+      data: DataContract
+      included: Optional<List<Included>>
+  
+  Included:
+    docs: Array of InsightsHistory (object) or RawMetadata (object) or InsightsOverview (object) or TokenAttributesStats (object)
+    union:
+      insightsHistory: InsightsHistory
+      rawMetadata: RawMetadata
+      insightsOverview: InsightsOverview
+      tokenAttributesStats: TokenAttributesStats
+  
+  TokenAttributesStats:
     properties:
-      property1: string #example, you'll delete this line and add the properties based on the API reference docs
+      id:
+        type: string
+        docs: Id of the attribute in a format `network:contract:token`, as for contract `token_attributes` include, Id will be in a format `network:contract`.
+      type: 
+        type: string
+        docs: Value: `token-attributes-stats`
+      attributes: TokenAttributesStatsAttributes
+      
+  TokenAttributesStatsAttributes:
+    properties:
+      attributes_stats: List<TokenAttributeStats>
+      
+  TokenAttributeStats:
+    properties:
+      value:
+        type: string
+        docs: Value of the attribute.
+      trait_type:
+        type: string
+        docs: Type of the attribute.
+      rarity_percentage:
+        type: string
+        docs: Percent of tokens that have an attribute of this `value` for this `trait_type`.
+      overall_with_trait_value:
+        type: long
+        docs: How many tokens are there having an attibute of this `value` for this `trait_type`.
+  
+  InsightsOverview:
+    properties:
+      id: string
+      type: 
+        type: string
+        docs: Value: `insights-overview`
+      attributes: InsightsOverviewAttributes
+      
+  InsightsOverviewAttributes:
+    extends: CommonInsightsPoint
+    properties:
+      period: Period
+      payment_asset: PaymentAsset
+  
+  Period:
+    docs: The time period for pricing and trading information.
+    enum:
+      - 24h
+      - 7d
+      - 30d
+      - 90d
+      - 365d
+      - all_time
+  
+  RawMetadata:
+    properties:
+      id: string
+      type: 
+        type: string
+        docs: Value: `raw-metadata`
+      attributes: RawMetadataAttributes
+      
+  RawMetadataAttributes:
+    properties:
+      url: optional<string>
+      payload: string
+      updated_at:
+        type: datetime
+        docs: The time when the metadata was successfully retrieved.
+      metadata_fetch_error:
+        type: string
+        docs: Description of the error that has occured during last metadata fetching.
+  
+  InsightsHistory:
+    properties:
+      id: string
+      type: 
+        type: string
+        docs: Value: `insights-history`
+      attributes: InsightsHistoryAttributes
+      
+  InsightsHistoryAttributes:
+    properties:
+      payment_asset: PaymentAsset
+      history: List<InsightsPoint>
+      
+  InsightsPoint:
+    extends: CommonInsightsPoint
+    properties:
+      time: datetime
+      
+  CommonInsightsPoint:
+    properties:
+      trades:
+        type: long
+        docs: Number of trades
+      volume:
+        type: string
+        docs: Volume of trades in base units of payment asset (wei for ETH).
+      unique_buyers:
+        type: long
+        docs: Number of unique buyers.
+      avg_price:
+        type: string
+        docs: Average price in base units of payment asset (wei for ETH).
+      min_price:
+        type: string
+        docs: Lowest price in base units of payment asset (wei for ETH).
+      max_price:
+        type: string
+        docs: Highest price in base units of payment asset (wei for ETH).
+      
+  PaymentAsset:
+    properties:
+      code: string
+      image_url: string
+      
+  DataContract:
+    properties:
+      id: string
+      type: string
+      attributes: Attributes
+      relationships: Relationships
+      
+  Attributes:
+    properties:
+      network: string
+      address:
+        type: string
+        docs: Hex encoded unique identifier of the collection in the network.
+      primary_interface: Primary_interface
+      tokens:
+        type: long
+        docs: Number of tokens that belong to a contract.
+      unique_owners:
+        type: long
+        docs: Number of unique accounts that own a token in the collection.
+      name:
+        type: optional<string>
+        docs: The name of the contract or the collection of tokens that the contract creates.
+      description:
+        type: optional<string>
+        docs: The description of the collection of tokens.
+      image_url: optional<string>
+      image_preview_icon_url: optional<string>
+      image_preview_small_url: optional<string>
+      image_preview_large_url: optional<string>
+      external_url: optional<string>
+      royalties_fee_basic_points:
+        type: optional<long>
+        docs: The percentage of the sale price to send to the royalty receiver; each 100 units represents 1% of the sale price.
+      royalties_receiver:
+        type: optional<string>
+        docs: The account to receive royalties.
+      
+  Primary_interface:
+    docs: Primary interface that the contract implements
+    enum:
+      - erc_721
+      - erc_1155
+      - erc_20
+      - need_recheck
+      - native_token
+
+  Relationships:
+    properties:
+      metadata: optional<Metadata>
+      insights: optional<Insights>
+      insights_history: optional<Insights_history>
+      insights_trend: optional<Insights_trend>
+      token_attributes: optional<Token_attributes>
+      
+  Metadata:
+    docs: Metadata of the contract.
+    properties:
+      data: optional<RawMetadataKey>
+      
+  RawMetadataKey:
+    properties:
+      id: string
+      type: 
+        type: string
+        docs: Value: `raw-metadata`
+
+  Insights:
+    docs: An overview of the contract's performance.
+    properties:
+      data: optional<InsightsOverviewKey>
+
+  InsightsOverviewKey:
+    properties:
+      id: string
+      type: 
+        type: string
+        docs: Value: `insights-overview`
+    
+  Insights_history:
+    docs: Historical information about the contract's performance.
+    properties:
+      data: optional<InsightsHistoryKey>
+  
+  InsightsHistoryKey:
+    properties:
+      id: string
+      type: 
+        type: string
+        docs: Value: `insights-history`.
+  
+  Insights_trend:
+    docs: An overview of the contract's market trends.
+    properties:
+      data: optional<InsightsTrendsKey>
+      
+  InsightsTrendsKey:
+    properties:
+      id: string
+      type: 
+        type: string
+        docs: Value: `insights-trends`
+  
+  Token_attributes:
+    docs: List of attributes that are available for tokens within a contract.
+    properties:
+      data: TokenAttributesStatsKey
+  
+  TokenAttributesStatsKey:
+    properties:
+      id:
+        type: string
+        docs: Id of the attribute in a format `network:contract:token`, as for contract `token_attributes` include, Id will be in a format `network:contract`.
+      type:
+        type: string
+        docs: Value: `token-attributes-stats`
+        
