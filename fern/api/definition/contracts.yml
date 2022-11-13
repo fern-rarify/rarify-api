@@ -32,29 +32,26 @@ types:
   Contract: 
     properties:
       data: DataContract
-      included: Optional<List<Included>>
+      included: optional<list<Included>>
   
   Included:
     docs: Array of InsightsHistory (object) or RawMetadata (object) or InsightsOverview (object) or TokenAttributesStats (object)
     union:
-      insightsHistory: InsightsHistory
-      rawMetadata: RawMetadata
-      insightsOverview: InsightsOverview
-      tokenAttributesStats: TokenAttributesStats
+      insights-history: InsightsHistory
+      raw-metadata: RawMetadata
+      insights-overview: InsightsOverview
+      token-attributes-stats: TokenAttributesStats
   
   TokenAttributesStats:
     properties:
       id:
         type: string
-        docs: Id of the attribute in a format `network:contract:token`, as for contract `token_attributes` include, Id will be in a format `network:contract`.
-      type: 
-        type: string
-        docs: Value: `token-attributes-stats`
+        docs: Id of the attribute in a format `network:contract:token`, as for contract `token_attributes` include, Id will be in a format `network:contract`.f
       attributes: TokenAttributesStatsAttributes
       
   TokenAttributesStatsAttributes:
     properties:
-      attributes_stats: List<TokenAttributeStats>
+      attributes_stats: list<TokenAttributeStats>
       
   TokenAttributeStats:
     properties:
@@ -74,9 +71,6 @@ types:
   InsightsOverview:
     properties:
       id: string
-      type: 
-        type: string
-        docs: Value: `insights-overview`
       attributes: InsightsOverviewAttributes
       
   InsightsOverviewAttributes:
@@ -88,44 +82,43 @@ types:
   Period:
     docs: The time period for pricing and trading information.
     enum:
-      - 24h
-      - 7d
-      - 30d
-      - 90d
-      - 365d
+      - value: 24h
+        name: twenty_four_h
+      - value: 7d
+        name: seven_d
+      - value: 30d
+        name: thirty_d
+      - value: 90d
+        name: ninety_d
+      - value: 365d
+        name: three_hundred_sixty_five_d
       - all_time
   
   RawMetadata:
     properties:
       id: string
-      type: 
-        type: string
-        docs: Value: `raw-metadata`
       attributes: RawMetadataAttributes
       
   RawMetadataAttributes:
     properties:
       url: optional<string>
-      payload: string
+      payload: optional<string>
       updated_at:
-        type: datetime
+        type: optional<datetime>
         docs: The time when the metadata was successfully retrieved.
       metadata_fetch_error:
-        type: string
+        type: optional<string>
         docs: Description of the error that has occured during last metadata fetching.
   
   InsightsHistory:
     properties:
       id: string
-      type: 
-        type: string
-        docs: Value: `insights-history`
       attributes: InsightsHistoryAttributes
       
   InsightsHistoryAttributes:
     properties:
       payment_asset: PaymentAsset
-      history: List<InsightsPoint>
+      history: list<InsightsPoint>
       
   InsightsPoint:
     extends: CommonInsightsPoint
@@ -161,7 +154,9 @@ types:
   DataContract:
     properties:
       id: string
-      type: string
+      type: 
+        type: string
+        docs: Value is "contracts"
       attributes: Attributes
       relationships: Relationships
       
@@ -171,7 +166,7 @@ types:
       address:
         type: string
         docs: Hex encoded unique identifier of the collection in the network.
-      primary_interface: Primary_interface
+      primary_interface: PrimaryInterface
       tokens:
         type: long
         docs: Number of tokens that belong to a contract.
@@ -196,7 +191,7 @@ types:
         type: optional<string>
         docs: The account to receive royalties.
       
-  Primary_interface:
+  PrimaryInterface:
     docs: Primary interface that the contract implements
     enum:
       - erc_721
@@ -209,9 +204,9 @@ types:
     properties:
       metadata: optional<Metadata>
       insights: optional<Insights>
-      insights_history: optional<Insights_history>
-      insights_trend: optional<Insights_trend>
-      token_attributes: optional<Token_attributes>
+      insights_history: optional<InsightsHistoryData>
+      insights_trend: optional<InsightsTrend>
+      token_attributes: optional<TokenAttributes>
       
   Metadata:
     docs: Metadata of the contract.
@@ -223,7 +218,7 @@ types:
       id: string
       type: 
         type: string
-        docs: Value: `raw-metadata`
+        docs: Value is `raw-metadata`
 
   Insights:
     docs: An overview of the contract's performance.
@@ -235,9 +230,9 @@ types:
       id: string
       type: 
         type: string
-        docs: Value: `insights-overview`
+        docs: Value is `insights-overview`
     
-  Insights_history:
+  InsightsHistoryData:
     docs: Historical information about the contract's performance.
     properties:
       data: optional<InsightsHistoryKey>
@@ -247,9 +242,9 @@ types:
       id: string
       type: 
         type: string
-        docs: Value: `insights-history`.
+        docs: Value is `insights-history`.
   
-  Insights_trend:
+  InsightsTrend:
     docs: An overview of the contract's market trends.
     properties:
       data: optional<InsightsTrendsKey>
@@ -259,9 +254,9 @@ types:
       id: string
       type: 
         type: string
-        docs: Value: `insights-trends`
+        docs: Value is `insights-trends`
   
-  Token_attributes:
+  TokenAttributes:
     docs: List of attributes that are available for tokens within a contract.
     properties:
       data: TokenAttributesStatsKey
@@ -273,5 +268,5 @@ types:
         docs: Id of the attribute in a format `network:contract:token`, as for contract `token_attributes` include, Id will be in a format `network:contract`.
       type:
         type: string
-        docs: Value: `token-attributes-stats`
+        docs: Value is `token-attributes-stats`
         
